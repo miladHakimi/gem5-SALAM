@@ -1,0 +1,20 @@
+name: Check gem5-SALAM
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  build:
+    name: Check build and test
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout
+        run: |
+          git clone https://github.com/${GITHUB_REPOSITORY}.git .
+          git fetch origin +${GITHUB_SHA}:${GITHUB_REF} --update-head-ok
+          git checkout ${GITHUB_SHA}
+          git submodule update --init
+      - name: Build and Test with Docker
+        run: docker build . --file docker/Dockerfile
+                            --build-arg BUILD_TYPE="opt"
